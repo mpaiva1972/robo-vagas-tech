@@ -1,0 +1,35 @@
+name: Robô Diário de Vagas
+
+on:
+  schedule:
+    # Roda todo dia às 6h da manhã (horário de Brasília)
+    - cron: '0 9 * * *'
+  workflow_dispatch:  # Botão para rodar manualmente
+
+jobs:
+  executar-robo:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Baixar o código
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: 📦 Instalar bibliotecas
+      run: |
+        pip install -r requirements.txt
+        
+    - name: 🤖 Executar robô de vagas
+      run: python robo_principal.py
+      
+    - name: 💾 Salvar log (caso erro)
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: logs-erro
+        path: |
+          *.log
