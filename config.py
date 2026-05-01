@@ -23,12 +23,12 @@ CARGOS = [
 # "hibrido" - só vagas híbridas  
 # "presencial" - só vagas presenciais
 # "" - vazio = qualquer tipo
-TIPO_TRABALHO = "remoto"
+TIPO_TRABALHO = "hibrido"
 
 # NÍVEL DE EXPERIÊNCIA (escolha UMA opção)
 # "junior" , "pleno", "senior", "especialista"
 # "" - vazio = qualquer nível
-NIVEL_EXPERIENCIA = "senior"
+NIVEL_EXPERIENCIA = ""
 
 # SITES PARA BUSCAR (não mude a menos que saiba o que faz)
 SITES_ATIVOS = ["linkedin", "indeed", "jobijoba", "infojobs"]
