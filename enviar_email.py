@@ -6,9 +6,9 @@ from datetime import datetime
 # ============================================
 # CONFIGURAÇÕES DE E-MAIL (VOCÊ MUDA AQUI)
 # ============================================
-SEU_EMAIL = "seuemail@gmail.com"  # ← MUDE PARA SEU E-MAIL
-SENHA_APP_GMAIL = ""  # ← COLE A SENHA DO APP
-EMAIL_DESTINO = "seuemail@gmail.com"  # ← PARA ONDE ENVIAR
+SEU_EMAIL = "paiva.consult@gmail.com"  # ← MUDE PARA SEU E-MAIL
+SENHA_APP_GMAIL = "vvar oeao difv jgqg"  # ← COLE A SENHA DO APP
+EMAIL_DESTINO = "paiva.consult@gmail.com"  # ← PARA ONDE ENVIAR
 
 def formatar_email_html(vagas):
     """Cria um e-mail bonito com as vagas encontradas"""
