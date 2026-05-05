@@ -5,7 +5,8 @@ Herda da classe BaseScraper
 
 from .base_scraper import BaseScraper
 from bs4 import BeautifulSoup
-import re
+import time
+import requests
 
 class LinkedInScraper(BaseScraper):
     """Raspador de vagas do LinkedIn"""
@@ -13,16 +14,7 @@ class LinkedInScraper(BaseScraper):
     def montar_url(self, cargo, tipo_trabalho, nivel):
         """
         Monta a URL de busca do LinkedIn com todos os filtros
-        
-        Exemplo de URL completa:
-        https://www.linkedin.com/jobs/search/
-            ?keywords=Enterprise%20Agile%20Coach
-            &location=Brasil
-            &f_WT=2          (remoto)
-            &f_E=3           (senior)
-            &f_JT=FULL_TIME  (tempo integral)
         """
-        
         # Codifica o cargo para a URL (espaços viram %20)
         cargo_codificado = cargo.replace(' ', '%20')
         
@@ -47,7 +39,6 @@ class LinkedInScraper(BaseScraper):
     def extrair_vagas(self, html, cargo_buscado):
         """
         Extrai as vagas do HTML do LinkedIn
-        Retorna uma lista de dicionários com os dados
         """
         soup = BeautifulSoup(html, 'html.parser')
         vagas = []
@@ -57,32 +48,32 @@ class LinkedInScraper(BaseScraper):
         
         for card in cards[:self.config.LIMITE_VAGAS]:
             try:
-                # ----- TÍTULO DA VAGA -----
+                # TÍTULO DA VAGA
                 titulo_elem = card.find('a', class_='job-card-list__title')
                 titulo = titulo_elem.text.strip() if titulo_elem else "N/A"
                 
-                # ----- NOME DA EMPRESA -----
+                # NOME DA EMPRESA
                 empresa_elem = card.find('h4', class_='base-search-card__subtitle')
                 if not empresa_elem:
                     empresa_elem = card.find('span', class_='job-card-container__company-name')
                 empresa = empresa_elem.text.strip() if empresa_elem else "N/A"
                 
-                # ----- LOCALIZAÇÃO -----
+                # LOCALIZAÇÃO
                 local_elem = card.find('span', class_='job-card-container__metadata-item')
                 if not local_elem:
                     local_elem = card.find('div', class_='job-card-container__metadata-wrapper')
                 local = local_elem.text.strip() if local_elem else "N/A"
                 
-                # ----- LINK DA VAGA -----
+                # LINK DA VAGA
                 link = ""
                 if titulo_elem and titulo_elem.get('href'):
                     link = titulo_elem.get('href')
                 
-                # ----- DATA DA PUBLICAÇÃO (opcional) -----
+                # DATA DA PUBLICAÇÃO
                 data_elem = card.find('time')
                 data_publicacao = data_elem.get('datetime') if data_elem else ""
                 
-                # Verifica se a vaga parece ser relevante (filtro simples por palavras-chave)
+                # Verifica se a vaga parece ser relevante
                 titulo_lower = titulo.lower()
                 cargo_lower = cargo_buscado.lower()
                 
@@ -90,37 +81,41 @@ class LinkedInScraper(BaseScraper):
                 palavras_executivas = ['leader', 'lead', 'head', 'director', 'manager', 'coach', 'consultor']
                 is_executiva = any(palavra in titulo_lower for palavra in palavras_executivas)
                 
-                # Se o cargo tem palavras executivas, aceita. Senão, verifica similaridade
-                if is_executiva or any(palavra in titulo_lower for palavra in cargo_lower.split()):
-                    vagas.append({
-                        "titulo": titulo,
-                        "empresa": empresa,
-                        "local": local,
-                        "link": link,
-                        "data_publicacao": data_publicacao,
-                        "site": "LinkedIn",
-                        "cargo_buscado": cargo_buscado,
-                        "score_executivo": "⭐" if is_executiva else ""
-                    })
+                vaga = {
+                    "titulo": titulo,
+                    "empresa": empresa,
+                    "local": local,
+                    "link": link,
+                    "data_publicacao": data_publicacao,
+                    "site": "LinkedIn",
+                    "cargo_buscado": cargo_buscado,
+                    "score_executivo": "⭐" if is_executiva else ""
+                }
+                vagas.append(vaga)
                     
             except Exception as e:
-                # Se uma vaga específica der erro, pula para a próxima
                 continue
         
         return vagas
 
-# Função de conveniência para usar o scraper
-def buscar_vagas_linkedin(config, cargos):
+def buscar_vagas_linkedin(cargos):
     """
     Função principal que coordena a busca no LinkedIn
+    Agora recebe apenas a lista de cargos (usa config internamente)
     """
+    # Importa config aqui para ter acesso às configurações
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    import config
+    
     scraper = LinkedInScraper(config)
     todas_vagas = []
     
-    print(f"\n  🌐 LinkedIn:")
     for i, cargo in enumerate(cargos, 1):
         print(f"    [{i}/{len(cargos)}] Buscando: {cargo}")
         vagas = scraper.buscar(cargo)
         todas_vagas.extend(vagas)
+        time.sleep(2)  # Delay entre cargos
     
     return todas_vagas
