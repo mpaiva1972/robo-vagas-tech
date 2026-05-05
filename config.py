@@ -5,16 +5,20 @@
 # ---------- O QUE VOCÊ MUDA ----------
 # LISTA DE CARGOS (pode colocar quantos quiser)
 CARGOS = [
-    "Enterprise Agile Coach",
-    "Consultor de Transformação Organizacional",
-    "Consultor de Agilidade e Transformação",
-    "Gerente de Estratégia e Transformação",
-    "Head de Delivery Transformation",
-    "Lean Portfolio Execution Lead",
-    "PMO Estratégico",
-    "Transformation PMO",
-    "Gerente PMO",
-    "Delivery Manager"
+    "Enterprise",
+    "Coach",
+    "Consultor",
+    "Agilidade",
+    "Transformação",
+    "Gerente",
+    "Estratégia",
+    "Delivery",
+    "Transformation",
+    "Portfolio",
+    "Portfólio",
+    "PMO",
+    "Estratégico",
+    "Manager"
 ]
 
 # TIPO DE TRABALHO (opções: "remoto", "hibrido", "presencial", "")
