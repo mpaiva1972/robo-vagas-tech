@@ -1,15 +1,20 @@
 """
-ROBÔ PRINCIPAL - Orquestra todos os sites
-Versão fracionada por componentes
+ROBÔ PRINCIPAL - Orquestrador com filtro de TI
 """
 
-from config import *  # ← LINHA CORRIGIDA: importa TUDO do config.py
+from config import *
+import sys
+import os
+
+# Adiciona o diretório atual para importações
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from sites.linkedin import buscar_vagas_linkedin
 from enviar_email import enviar_relatorio
 from datetime import datetime
 
 def mostrar_configuracoes():
-    """Mostra as configurações atuais antes de buscar"""
+    """Mostra as configurações atuais"""
     print("\n" + "=" * 60)
     print("📋 CONFIGURAÇÕES ATUAIS")
     print("=" * 60)
@@ -18,68 +23,61 @@ def mostrar_configuracoes():
         print(f"     • {cargo}")
     print(f"\n   Tipo de trabalho: {TIPO_TRABALHO or 'Qualquer'}")
     print(f"   Nível: {NIVEL_EXPERIENCIA or 'Qualquer'}")
+    print(f"   Apenas vagas de TI: {'Sim ✅' if APENAS_TI else 'Não'}")
     print("=" * 60)
 
 def buscar_em_todos_sites():
     """Busca vagas em todos os sites ativos"""
     todas_vagas = []
     
-    # LinkedIn
     if SITES_ATIVOS.get("linkedin", False):
         print("\n  🌐 LinkedIn:")
-        vagas_linkedin = buscar_vagas_linkedin(CARGOS)  # ← CORRIGIDO: só passa CARGOS
+        vagas_linkedin = buscar_vagas_linkedin(CARGOS)
+        
+        # Aplica filtro de TI se necessário
+        if APENAS_TI:
+            vagas_linkedin = [v for v in vagas_linkedin if v.get('score_executivo') == '⭐ TI']
+        
         todas_vagas.extend(vagas_linkedin)
-        print(f"\n  📊 LinkedIn: {len(vagas_linkedin)} vagas encontradas")
-    
-    # Futuros sites serão adicionados aqui:
-    # if SITES_ATIVOS.get("indeed", False):
-    #     from sites.indeed import buscar_vagas_indeed
-    #     vagas_indeed = buscar_vagas_indeed(CARGOS)
-    #     todas_vagas.extend(vagas_indeed)
+        print(f"\n  📊 LinkedIn: {len(vagas_linkedin)} vagas de TI encontradas")
     
     return todas_vagas
 
-def formatar_resumo(vagas):
-    """Gera um resumo para mostrar no console"""
-    if not vagas:
-        return "\n  ⚠️ Nenhuma vaga encontrada"
-    
-    resumo = f"\n  📈 Total: {len(vagas)} vagas\n"
-    por_site = {}
-    for vaga in vagas:
-        site = vaga['site']
-        por_site[site] = por_site.get(site, 0) + 1
-    
-    for site, qtd in por_site.items():
-        executivas = sum(1 for v in vagas if v['site'] == site and v.get('score_executivo'))
-        resumo += f"\n     • {site}: {qtd} vagas"
-        if executivas:
-            resumo += f" (⭐ {executivas} executivas)"
-    
-    return resumo
+def mostrar_exemplos(vagas):
+    """Mostra exemplos das vagas encontradas"""
+    if vagas:
+        print("\n  📌 EXEMPLOS DE VAGAS ENCONTRADAS:")
+        for vaga in vagas[:5]:
+            print(f"     • {vaga['titulo'][:60]}")
+            print(f"       {vaga['empresa']} - {vaga['local']}")
+            print()
 
 def main():
     print("\n" + "🤖" * 30)
-    print("ROBÔ DE VAGAS EXECUTIVAS - LINKEDIN")
+    print("ROBÔ DE VAGAS DE TI - LINKEDIN")
     print(f"📅 {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
     print("🤖" * 30)
     
-    # Mostra as configurações atuais
     mostrar_configuracoes()
     
-    # Busca as vagas
     print("\n🔍 Iniciando busca...")
     vagas_encontradas = buscar_em_todos_sites()
     
-    # Mostra resumo
-    print(formatar_resumo(vagas_encontradas))
+    if vagas_encontradas:
+        print(f"\n  ✅ TOTAL: {len(vagas_encontradas)} vagas de TI encontradas!")
+        mostrar_exemplos(vagas_encontradas)
+    else:
+        print("\n  ⚠️ Nenhuma vaga de TI encontrada com os filtros atuais.")
+        print("  💡 Dicas:")
+        print("     • Verifique se os cargos estão escritos corretamente")
+        print("     • Tente TIPO_TRABALHO = '' (remova o filtro)")
+        print("     • Tente APENAS_TI = False para ver todas as vagas")
     
-    # Envia e-mail
     print("\n📧 Enviando relatório...")
     enviar_relatorio(vagas_encontradas)
     
     print("\n" + "✅" * 20)
-    print("ROBÔ FINALIZADO COM SUCESSO!")
+    print("ROBÔ FINALIZADO!")
     print("✅" * 20)
 
 if __name__ == "__main__":
