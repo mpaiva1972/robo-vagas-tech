@@ -23,28 +23,27 @@ TIPO_TRABALHO = "remoto"
 # NÍVEL DE EXPERIÊNCIA (opções: "junior", "pleno", "senior", "especialista", "")
 NIVEL_EXPERIENCIA = "senior"
 
+# FILTRO DE TECNOLOGIA (True = só vagas de TI, False = todas as vagas)
+APENAS_TI = True  # ← NOVO! Mude para False se quiser todas as vagas
+
 # ---------- CONFIGURAÇÕES TÉCNICAS (NÃO MEXA) ----------
-# URL base do LinkedIn
 LINKEDIN_BASE_URL = "https://www.linkedin.com/jobs/search"
 
-# Mapeamento para os filtros do LinkedIn
 TIPO_TRABALHO_MAP = {
-    "remoto": "2",      # 2 = Remote
-    "hibrido": "1",     # 1 = Hybrid
-    "presencial": "3"   # 3 = On-site
+    "remoto": "2",
+    "hibrido": "1",
+    "presencial": "3"
 }
 
 NIVEL_MAP = {
     "junior": "1",
-    "pleno": "2", 
+    "pleno": "2",
     "senior": "3",
     "especialista": "4"
 }
 
-# Limite de vagas por busca
-LIMITE_VAGAS = 20
+LIMITE_VAGAS = 15  # Aumentei para 15
 
-# Sites ativos (para desligar um, mude para False)
 SITES_ATIVOS = {
     "linkedin": True,
     "indeed": False,
