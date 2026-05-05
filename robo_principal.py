@@ -3,7 +3,7 @@ ROBÔ PRINCIPAL - Orquestra todos os sites
 Versão fracionada por componentes
 """
 
-from config import *
+from config import *  # ← LINHA CORRIGIDA: importa TUDO do config.py
 from sites.linkedin import buscar_vagas_linkedin
 from enviar_email import enviar_relatorio
 from datetime import datetime
@@ -26,14 +26,15 @@ def buscar_em_todos_sites():
     
     # LinkedIn
     if SITES_ATIVOS.get("linkedin", False):
-        vagas_linkedin = buscar_vagas_linkedin(config, CARGOS)
+        print("\n  🌐 LinkedIn:")
+        vagas_linkedin = buscar_vagas_linkedin(CARGOS)  # ← CORRIGIDO: só passa CARGOS
         todas_vagas.extend(vagas_linkedin)
         print(f"\n  📊 LinkedIn: {len(vagas_linkedin)} vagas encontradas")
     
     # Futuros sites serão adicionados aqui:
     # if SITES_ATIVOS.get("indeed", False):
     #     from sites.indeed import buscar_vagas_indeed
-    #     vagas_indeed = buscar_vagas_indeed(config, CARGOS)
+    #     vagas_indeed = buscar_vagas_indeed(CARGOS)
     #     todas_vagas.extend(vagas_indeed)
     
     return todas_vagas
@@ -41,7 +42,7 @@ def buscar_em_todos_sites():
 def formatar_resumo(vagas):
     """Gera um resumo para mostrar no console"""
     if not vagas:
-        return "  ⚠️ Nenhuma vaga encontrada"
+        return "\n  ⚠️ Nenhuma vaga encontrada"
     
     resumo = f"\n  📈 Total: {len(vagas)} vagas\n"
     por_site = {}
