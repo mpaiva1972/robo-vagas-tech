@@ -2,6 +2,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
+import config  # ← IMPORTANTE: importa o config.py
 
 # ============================================
 # CONFIGURAÇÕES DE E-MAIL (VOCÊ MUDA AQUI)
@@ -138,6 +139,3 @@ def enviar_relatorio(vagas):
         print(f"❌ Erro ao enviar e-mail: {e}")
         print("\nVerifique a SENHA_APP_GMAIL no arquivo enviar_email.py")
         return False
-
-# Import config para usar no email (para mostrar filtros)
-import config
